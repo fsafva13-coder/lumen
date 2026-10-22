@@ -129,6 +129,9 @@ def _fit(x: np.ndarray, y: np.ndarray):
 
 
 def analyze(cap: Capture, ch: Challenge) -> LightResult:
+    fps = cap.frames_total / max(ch.duration + 1.6, 1e-6)
+    if cap.frames_total and fps < 12:
+        return LightResult(False, f"camera too slow ({fps:.0f} fps) - add more light")
     if len(cap.times) < 40:
         return LightResult(False, "face not visible for long enough")
     t = np.array(cap.times)

@@ -23,13 +23,13 @@ def main() -> None:
     metas = sorted(args.path.rglob("*_turn.json"))
     if not metas:
         sys.exit("No *_turn.json clips found. Record some with scripts/04_head_turn.py")
-    print(f"{'label':7} {'subject':7} {'verdict':12} {'parallax':>8} {'shift':>6} {'narrow%':>7} {'eyes':>5} {'asked':>6}  note")
+    print(f"{'label':7} {'subject':7} {'verdict':12} {'shift':>6} {'parallax':>8} {'narrow%':>7} {'eyes':>5} {'asked':>6}  note")
     for m in metas:
         meta = json.loads(m.read_text())
-        res = analyze(meta["times"], np.array(meta["landmarks"]), ref_seconds=0.9)
-        v = verdict(res)[0]
+        res = analyze(meta["times"], np.array(meta["landmarks"]), ref_seconds=meta.get("ref_seconds", 0.9))
+        v = verdict(res, meta.get('direction_asked'))[0]
         if res.ok:
-            print(f"{meta['label']:7} {meta['subject']:7} {v:12} {res.parallax:8.3f} {res.nose_shift:+6.2f} "
+            print(f"{meta['label']:7} {meta['subject']:7} {v:12} {res.nose_shift:+6.2f} {res.parallax:8.3f} "
                   f"{(1 - res.foreshorten) * 100:7.1f} {res.face_px:5.0f} {meta['direction_asked']:>6}  {meta.get('note', '')}")
         else:
             print(f"{meta['label']:7} {meta['subject']:7} {v:12} -- {res.reason}  {meta.get('note', '')}")

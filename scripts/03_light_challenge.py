@@ -30,6 +30,7 @@ from lumen import hud  # noqa: E402
 from lumen.camera import describe, open_camera  # noqa: E402
 from lumen.face import FaceTracker  # noqa: E402
 from lumen.light import Capture, analyze, make_challenge, verdict  # noqa: E402
+from lumen.voice import Voice  # noqa: E402
 
 LABELS = ["real", "print", "screen", "mask", "deepfake"]
 CW, CH = 1280, 720          # canvas size (the window is shown full-screen)
@@ -169,11 +170,13 @@ def main() -> None:
     ap.add_argument("--camera", type=int, default=0)
     ap.add_argument("--auto-exposure", action="store_true", help="leave camera auto-exposure on")
     ap.add_argument("--no-save", action="store_true", help="do not save the clip")
+    ap.add_argument("--mute", action="store_true", help="no spoken prompts")
     args = ap.parse_args()
     if args.step_seconds < 0.34:
         sys.exit("step-seconds must be at least 0.34 (photosensitivity safety limit).")
 
     tracker = FaceTracker()
+    voice = Voice(enabled=not args.mute)
     cap = open_camera(args.camera, lock_exposure=not args.auto_exposure)
     cam_mode = describe(cap)
     print("Camera:", cam_mode)
@@ -183,14 +186,18 @@ def main() -> None:
 
     while align_phase(cap, tracker, win, args):
         ch = make_challenge(args.steps, args.step_seconds)
+        voice.say("Hold still. Scanning with light.")
         capt, frames, times = challenge_phase(cap, tracker, win, ch)
         res = analyze(capt, ch)
-        print("Verdict:", *verdict(res), "|", res.features() if res.ok else "")
+        label, reason = verdict(res)
+        voice.say({"live": "Live face.", "fake": "Not a live face.", "inconclusive": "Inconclusive."}[label] + f" {reason}.")
+        print("Verdict:", label, reason, "|", res.features() if res.ok else "")
         if not args.no_save and frames:
             print("Saved", save(frames, times, ch, res, cam_mode, args))
         if not result_screen(win, res):
             break
 
+    voice.close()
     cap.release()
     cv.destroyAllWindows()
 

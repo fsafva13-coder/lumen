@@ -6,3 +6,5 @@ data/snapshots/
 .env
 .aws/
 .vscode/
+data/sessions/
+cloud/*.zip

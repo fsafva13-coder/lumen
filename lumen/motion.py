@@ -76,25 +76,30 @@ def analyze(times, landmarks, ref_seconds: float = 0.8) -> MotionResult:
                         float(ref_iod), int(len(t)))
 
 
-# Provisional thresholds from the geometry of an average face; re-fit on data.
-MIN_EYE_PX = 45        # eye distance in pixels (about a 120 px wide face)
-TURN_SHIFT = 0.10      # nose moved sideways by 10% of eye distance, or...
-TURN_FORESHORTEN = 0.92  # ...the face narrowed by 8%: something turned
-LIVE_PARALLAX = 0.10
-FLAT_PARALLAX = 0.06
+# --- Decision ---------------------------------------------------------------
+# What the pilot clips (2 people, 1 printed ad, 1 phone) showed:
+#   * The plane-parallax number is NOT reliable with 5 detector landmarks:
+#     swivelled flat photos scored 0.05-0.22, a moderate real turn 0.09.
+#     It is still reported, but it no longer decides anything.
+#   * What does separate them is a FAR turn. On a real head turned toward
+#     profile the nose slides past the eyes (shift 0.9-2.6 eye distances).
+#     A flat photo swivelled as far as it could go reached only 0.10-0.35.
+# So the test is: turn far, in the direction asked. It can confirm a live
+# head; it never declares "fake" on its own, because a real person who
+# turns only a little looks the same as a swivelled photo.
+MIN_EYE_PX = 45        # eye distance in pixels at the start
+LIVE_SHIFT = 0.60      # nose must slide this far sideways (eye distances)
+SIGN = {"left": 1.0, "right": -1.0}   # subject's left = image right = positive shift
 
 
-def verdict(res: MotionResult) -> tuple[str, str]:
-    """Returns (label, reason). label: live | fake | inconclusive."""
+def verdict(res: MotionResult, asked: str | None = None) -> tuple[str, str]:
+    """Returns (label, reason). label: live | inconclusive."""
     if not res.ok:
         return "inconclusive", res.reason
     if res.face_px < MIN_EYE_PX:
         return "inconclusive", "face too small - move closer to the camera"
-    if res.parallax >= LIVE_PARALLAX:
-        return "live", "nose moves off the face plane like a 3D head"
-    turned = abs(res.nose_shift) >= TURN_SHIFT or res.foreshorten <= TURN_FORESHORTEN
-    if not turned:
-        return "inconclusive", "no head turn seen - turn further"
-    if res.parallax < FLAT_PARALLAX:
-        return "fake", "turned, but the nose stayed on the face plane (flat surface)"
-    return "inconclusive", "turn was too small to judge depth"
+    if abs(res.nose_shift) < LIVE_SHIFT:
+        return "inconclusive", "turn further - until you are facing sideways"
+    if asked in SIGN and res.nose_shift * SIGN[asked] < 0:
+        return "inconclusive", f"turned the wrong way - asked for {asked}"
+    return "live", "nose slides past the eyes like a real 3D head"
