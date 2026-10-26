@@ -112,19 +112,34 @@ flowchart LR
 
 | Presented | Sessions | Verified | Rejected | Referred | Median time |
 |---|---|---|---|---|---|
-| Real (p02 ×5, p01 ×3) | 8 | **8** | 0 | 0 | 18 s |
-| Phone photo / video | 6 | **0** | 3 | 3 | 25 s |
+| Real (p02 ×5, p01 ×5) | 10 | **9** | 1 | 0 | 18 s |
+| Phone photo / video | 11 | **1** | 3 | 7 | 26 s |
 
-**APCER 0 % (0/6); BPCER 0 % (0/8).** All 14 sessions were analysed on AWS Lambda.
+**APCER 9 % (1/11); BPCER 10 % (1/10).** All 21 sessions were analysed on AWS Lambda.
 
-- Of the 6 phone attacks, 4 were stopped at the light challenge (3 rejected as *not reflected*, 1 referred after repeated movement). The other 2 (phone video) passed the light challenge and were then stopped by the head turn.
+- Of the 10 attacks that were stopped, 7 were stopped at the light challenge (3 rejected as *not reflected*, 4 referred after repeated movement) and 3 passed the light challenge but failed the head turn (nose shift at most 0.41).
 - One real session needed a second light attempt because of movement and took 31 s.
+
+**The accepted attack (most important failure case).** A phone photo at high screen brightness:
+
+- **Light challenge:** code match R² 0.91 and reflection gain **0.11**, just above the 0.10 floor. Real faces in round 2 had 0.15–0.69. Its relief was 1.79, far outside the real range of 0.27–0.40.
+- **Head turn:** swivelled hard, it reached a nose shift of **0.65**, just over the 0.60 threshold. Real heads in round 2 gave 1.0 or more, and in the pilot 0.92 or more.
+
+Both margins were thin. Earlier, the highest swivelled photo had reached 0.46.
+
+**The rejected real session.** Participant p01 sat further from the screen (face 142 px) and produced a reflection gain of 0.099, just under the floor, together with a code match of 0.77. The light floor therefore sits where a bright phone and a distant real face overlap.
+
+**Fixes identified but deliberately not applied** (there was no time left to re-test them honestly):
+
+- Raise the head-turn threshold to about 0.9. Every real far turn so far gave at least 0.92; the accepted attack gave 0.65.
+- Add an upper bound on relief, since a phone's reflection map is far more uneven than a face's.
+- Normalise the reflection gain by face-to-screen distance.
 
 ### 7.4 Failure cases and limitations
 
-- **Small sample.** There were 14 final sessions with 2 participants from one household on one camera. The results show the method works on this setup, not that it generalises. Confidence intervals at this size are wide.
+- **Small sample.** There were 21 final sessions with 2 participants from one household on one camera. The results show the method works on this setup, not that it generalises. Confidence intervals at this size are wide.
 - **Untested attacks in full sessions:** printed photos (tested only per component), 3D masks, live deepfakes with real-time head control, and virtual-camera injection that could re-render lighting.
-- **Phone screens can reflect the code.** Phones held close to a bright laptop screen sometimes passed the light challenge (round 1: 2 sessions; round 2: 2 sessions). The head turn caught every one, but the system relies on both checks.
+- **Phone screens can reflect the code.** Bright phones held close to the laptop screen passed the light challenge in 2 round-1 and 6 round-2 sessions. The head turn caught all but one (section 7.3).
 - **Movement causes referrals.** Hand-held attacks and shaky users trigger *too much movement*, which slows real users.
 - **Lighting.** Very dark rooms push the camera below a usable frame rate. LUMEN reports this rather than guessing.
 - **Thresholds were set on small data** and changed once after round 1 (disclosed above).

@@ -127,12 +127,12 @@ Small pilot evaluation: one laptop webcam, 2 consenting participants, 1 phone an
 
 | Round | Presented | Sessions | Verified | Rejected | Referred to human | Median time |
 |---|---|---|---|---|---|---|
-| 2 (final policy) | Real (2 people) | 8 | **8** | 0 | 0 | 18 s |
-| 2 (final policy) | Phone photo / video | 6 | **0** | 3 | 3 | 25 s |
+| 2 (final policy) | Real (2 people) | 10 | **9** | 1 | 0 | 18 s |
+| 2 (final policy) | Phone photo / video | 11 | **1** | 3 | 7 | 26 s |
 | 1 (first policy) | Real (2 people) | 10 | 5 | 4 | 1 | 18 s |
 | 1 (first policy) | Phone photo / video | 7 | 0 | 4 | 3 | 13 s |
 
-Round 2: **APCER 0% (0/6), BPCER 0% (0/8)**, all 14 sessions analysed on AWS Lambda. Round 1 rejected real faces on 3D relief; that rule was removed and two thresholds relaxed *using round-1 data*, then round 2 was recorded fresh. Details, failure cases and limitations: [`docs/REPORT.md`](docs/REPORT.md).
+Round 2: **APCER 9% (1/11), BPCER 10% (1/10)**, all 21 sessions analysed on AWS Lambda. One bright phone photo, swivelled hard, passed both checks by a narrow margin (reflection gain 0.11 vs a 0.10 floor; nose shift 0.65 vs 0.60), and one real session was rejected with a gain of 0.099. Round 1 rejected real faces on 3D relief; that rule was removed and two thresholds relaxed *using round-1 data* before round 2. Details, failure analysis and limitations: [`docs/REPORT.md`](docs/REPORT.md).
 
 **Individual challenges (recorded clips)**
 

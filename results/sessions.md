@@ -1,9 +1,10 @@
 | Presented | Sessions | Verified | Rejected | Referred to human | Median time | Avg. challenges |
 |---|---|---|---|---|---|---|
-| real | 8 | 8 | 0 | 0 | 18 s | 2.1 |
-| screen | 6 | 0 | 3 | 3 | 25 s | 2.2 |
+| real | 10 | 9 | 1 | 0 | 18 s | 2.0 |
+| screen | 11 | 1 | 3 | 7 | 26 s | 2.5 |
 
-APCER (attacks accepted as live): 0% (0/6)
-BPCER (real people not verified): 0% (0/8)
-Sessions analysed on AWS: 14 of 14
-  screen: not verified at -> light 5, turn 1
+APCER (attacks accepted as live): 9% (1/11)
+BPCER (real people not verified): 10% (1/10)
+Sessions analysed on AWS: 21 of 21
+  real: not verified at -> light 1
+  screen: not verified at -> light 7, turn 3
