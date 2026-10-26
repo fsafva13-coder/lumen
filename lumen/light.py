@@ -211,14 +211,18 @@ def _deplane(ratio: np.ndarray, skin: np.ndarray) -> tuple[np.ndarray, float]:
 
 
 # --- Decision ---------------------------------------------------------------
-# Provisional thresholds, set from a small pilot set (2 people, 1 phone,
-# 2 printed ads, 1 room). Re-fit them whenever the evaluation set grows.
-MIN_FACE_PX = 120     # below this the face is too small to judge shape
-MIN_R2 = 0.85         # face brightness must follow the random code
+# Version 2 (evaluation round 1, 26 Oct). Round 1 on the final camera setup
+# showed the 3D-relief test rejecting real faces (relief 0.19-0.31 vs a 0.26
+# cut-off) and a 0.85 code-match cut-off rejecting one real face at 0.84.
+# Relief had already failed to stop a steady printed photo in the pilot, and
+# the mandatory head turn catches prints, so relief is now REPORTED but no
+# longer rejects. The light challenge's job is to reject what cannot react
+# to the random code at all: screen replays and injected video.
+MIN_FACE_PX = 120     # below this the face is too small to judge
+MIN_R2 = 0.80         # face brightness must follow the random code
 MIN_GAIN = 0.10       # and by a meaningful amount
-MIN_RELIEF = 0.26     # reflection must be uneven like a 3D face
-MAX_MOTION = 0.045    # face may wander at most 4.5% of its width...
-MAX_LOST = 3          # ...and vanish for at most 3 frames, or shape cannot be judged
+MAX_MOTION = 0.06     # face may wander at most 6% of its width...
+MAX_LOST = 3          # ...and vanish for at most 3 frames
 
 
 def verdict(res: LightResult) -> tuple[str, str]:
@@ -227,14 +231,11 @@ def verdict(res: LightResult) -> tuple[str, str]:
         return "inconclusive", res.reason
     if res.face_px < MIN_FACE_PX:
         return "inconclusive", "face too small - move closer to the camera"
+    if res.motion > MAX_MOTION or res.lost > MAX_LOST:
+        return "inconclusive", "too much movement - hold still and run again"
     if res.r2 < MIN_R2 or res.gain < MIN_GAIN:
         return "fake", "does not reflect the code (screen replay or injected video)"
-    if res.relief < MIN_RELIEF and res.motion <= MAX_MOTION:
-        return "fake", "reflects evenly like a flat surface (printed photo)"
-    if res.motion > MAX_MOTION or res.lost > MAX_LOST:
-        # Movement smears the reflection map and can fake 3D relief.
-        return "inconclusive", "too much movement - hold still and run again"
-    return "live", "reflects the code with 3D relief"
+    return "live", "reflects the random light code"
 
 
 def capture_from_frames(frames, times, tracker: FaceTracker) -> Capture:
