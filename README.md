@@ -51,6 +51,8 @@ flowchart LR
 
 ## Screenshots / Demo
 
+▶ **Demo video (≤ 5 min):** https://youtu.be/Vt1LJn4vxYY
+
 Decision screens from real round-2 sessions analysed on AWS Lambda:
 
 | Live person: light + head turn passed | Phone video: passed light, failed head turn |
@@ -163,7 +165,7 @@ Round 2: **APCER 9% (1/11), BPCER 10% (1/10)**, all 21 sessions analysed on AWS 
 ## Demo / Live Link
 
 - Cloud endpoint: AWS Lambda function URL — available to judges on request (access key required)
-- Video (≤ 5 min): `[link]`
+- Video (≤ 5 min): https://youtu.be/Vt1LJn4vxYY
 
 ## License
 

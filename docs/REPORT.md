@@ -4,6 +4,8 @@
 
 OpenCV AI Competition 2026 (powered by AWS) · Solo entry · Fathima Safva · October 2026
 
+Demo video: https://youtu.be/Vt1LJn4vxYY · Code: https://github.com/fsafva13-coder/lumen
+
 ---
 
 ## 1. Problem
