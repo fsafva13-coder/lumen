@@ -51,9 +51,11 @@ flowchart LR
 
 ## Screenshots / Demo
 
-| Light challenge | Reflection map | Decision |
-|---|---|---|
-| `[screenshot: docs/light_challenge.png]` | `[screenshot: docs/reflection_map.png]` | `[screenshot: docs/decision.png]` |
+Decision screens from real round-2 sessions analysed on AWS Lambda:
+
+| Live person: light + head turn passed | Phone video: passed light, failed head turn |
+|---|---|
+| ![Verified decision](docs/decision_real.png) | ![Referred decision](docs/decision_refer.png) |
 
 ## Installation
 
